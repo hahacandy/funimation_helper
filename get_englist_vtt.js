@@ -8,7 +8,7 @@ function get_sub_url(){
 
 	var vtt_url = null;
 
-	for(i=0; i<networks.length-1; i++){
+	for(i=0; i<networks.length; i++){
 
 		var network = networks[i];
 		

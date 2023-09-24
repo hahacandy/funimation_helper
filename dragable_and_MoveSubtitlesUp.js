@@ -30,10 +30,12 @@
 })();
 
 setInterval(function() {
-   document.querySelector('#vjs_video_3 > div.vjs-text-track-display').style.pointerEvents = 'auto';
-   bar_clientHeight = document.querySelector('#vjs_video_3 > div.vjs-control-bar > div').clientHeight;
-   document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div').style.top = '-'+bar_clientHeight+'px';
-   document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div').style.display = '';
+	try{
+	   document.querySelector('#vjs_video_3 > div.vjs-text-track-display').style.pointerEvents = 'auto';
+	   bar_clientHeight = document.querySelector('#vjs_video_3 > div.vjs-control-bar > div').clientHeight;
+	   document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div').style.top = '-'+bar_clientHeight+'px';
+	   document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div').style.display = '';
+	}catch{}
    
    
-}, 1);
+}, 10);
