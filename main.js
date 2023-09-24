@@ -253,6 +253,7 @@ function main5(){
 		
 		if(move_time != null){
 			vid.currentTime = move_time;
+			vid.play();
 		}
 			
 
@@ -287,4 +288,40 @@ function main6(){
 
 	});
 
+	main7();
+
+}
+
+/////////////////한 자막이 끝나면 끝나는 시점에서 정지
+
+function pause_vid_when_end(){
+	
+	var vid = document.getElementsByTagName('video')[0];
+	
+	if(vid.paused == false){
+		for(i=0; i<vtt_cues.length; i++){
+			
+			if(vid.currentTime > vtt_cues[i].start && vid.currentTime <= vtt_cues[i].end){
+				var vid_current_time = vid.currentTime.toFixed(2);
+				var cue_current_time = vtt_cues[i].end.toFixed(2);
+				
+				
+				//console.log(vid_current_time + ' ' + cue_current_time);
+				if(vid_current_time >= cue_current_time-0.03){
+					vid.pause();
+				}
+				break;
+			}
+			
+		}
+	}
+
+	setTimeout(pause_vid_when_end, 1);
+}
+
+function main7(){
+	var vid = document.getElementsByTagName('video')[0];
+	
+	setTimeout(pause_vid_when_end, 1);
+	
 }
