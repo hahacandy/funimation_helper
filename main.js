@@ -302,8 +302,8 @@ function pause_vid_when_end(){
 		for(i=0; i<vtt_cues.length; i++){
 			
 			if(vid.currentTime > vtt_cues[i].start && vid.currentTime <= vtt_cues[i].end){
-				var vid_current_time = vid.currentTime.toFixed(2);
-				var cue_current_time = vtt_cues[i].end.toFixed(2);
+				var vid_current_time = vid.currentTime.toFixed(3);
+				var cue_current_time = vtt_cues[i].end.toFixed(3);
 				
 				
 				//console.log(vid_current_time + ' ' + cue_current_time);
