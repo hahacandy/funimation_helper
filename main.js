@@ -307,7 +307,8 @@ function pause_vid_when_end(){
 				
 				
 				//console.log(vid_current_time + ' ' + cue_current_time);
-				if(vid_current_time >= cue_current_time-0.01){
+				if(vid_current_time >= cue_current_time-0.02){
+					
 					vid.pause();
 				}
 				break;
