@@ -261,6 +261,30 @@ function main5(){
 		
 	});
 
-	
+	main6();
 		
+}
+
+//////////////////////// 영상 마우스로 클릭하면 멈춤 재생
+//document.querySelector('#vjs_video_3 > div.vjs-text-track-display').style.pointerEvents = 'auto';
+//을 사용한 탓에 ui가 이상해졌기 때문
+
+
+function main6(){
+	
+	var vid = document.getElementsByTagName('video')[0];
+	var text_all_display = document.querySelector('#vjs_video_3 > div.vjs-text-track-display');
+	
+	text_all_display.addEventListener("mouseup", (event) => {
+		
+		if(event.srcElement.style.position != 'relative'){ // 실제로 자막 나오는 구간은 클릭해도 작동안하게
+			if(vid.paused){
+				vid.play();
+			}else{
+				vid.pause();
+			}
+		}
+
+	});
+
 }
