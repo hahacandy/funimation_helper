@@ -130,9 +130,15 @@ function main3(){
 		for(j=0; j<split_vt.length; j++){
 			
 			if(j==0){
-				split_v = split_vt[j].split(' ')
-				vtt_cue.start = split_v[0]
-				vtt_cue.end = split_v[2]
+				split_v = split_vt[j].split(' ');
+				
+				vtt_cue.start = split_v[0];
+				var start_split = vtt_cue.start.split(':');
+				vtt_cue.start = parseFloat((start_split[0]*60*60))+parseFloat((start_split[1]*60))+parseFloat(start_split[2]);
+				
+				vtt_cue.end = split_v[2];
+				var end_split = vtt_cue.end.split(':');
+				vtt_cue.end = parseFloat((end_split[0]*60*60))+parseFloat((end_split[1]*60))+parseFloat(end_split[2]);
 			}else{
 				
 				text_cue = text_cue + split_vt[j];
@@ -154,7 +160,7 @@ function main3(){
 }
 
 
-////////////////////////// 비디오 키 다운 리스너를 없애고
+////////////////////////// 비디오 키 다운 리스너를 없애고(아직 방법 못찾음)
 
 function main4(){
 	
@@ -167,6 +173,94 @@ function main4(){
 
 //////////////////// 키보드 누르면 자막이동
 
+function get_vide_time(mode, vid_current_time){
+	
+	var move_time = null;
+	
+	if(mode == 'right'){
+		for(i=0; i<vtt_cues.length; i++){
+			if(vid_current_time < vtt_cues[i].start){
+				move_time = vtt_cues[i].start;
+				break;
+			}
+		}
+	}
+	else if(mode == 'left'){
+		
+		for(i=vtt_cues.length-1; i>=0; i--){
+
+			if(vid_current_time > vtt_cues[i].start){
+				
+				var cue_cursor = i-1;
+				if(cue_cursor >= 0){
+					move_time = vtt_cues[cue_cursor].start;
+				}
+				break;
+			}
+		}
+	}
+	else if(mode == 'up'){
+		
+		for(i=0; i<vtt_cues.length; i++){
+			
+			if(vid_current_time < vtt_cues[i].start){
+				
+				var cue_cursor = i-1;
+				if(cue_cursor >= 0){
+					move_time = vtt_cues[cue_cursor].start;
+				}
+				break;
+			}
+		}
+	}
+
+	//console.log(move_time);
+	return move_time;
+}
+
 function main5(){
 	const target = document.querySelector('#vjs_video_3');
+	
+	target.addEventListener("keydown", (e) => {
+	
+		var vid = document.getElementsByTagName('video')[0];
+		
+		var vid_current_time = vid.currentTime;
+		
+		var move_time = null;
+		
+		if (e.code == "KeyA") {
+			if(vtt_cues.length == 0){
+				var preTime = vid.currentTime - 3;
+				if (preTime > 0) {
+					vid.currentTime = preTime;
+				}
+			}else{
+				move_time = get_vide_time('left', vid_current_time);
+			}
+		} else if (e.code == "KeyD") {
+			if(vtt_cues.length == 0){
+				var nextTime = vid.currentTime + 3;
+				if (nextTime+3 < vid.duration) {
+					vid.currentTime = nextTime;
+				}
+			}else{
+				move_time = get_vide_time('right', vid_current_time);
+			}
+		} else if (e.code == "KeyW") {
+			move_time = get_vide_time('up', vid_current_time);
+		}
+		
+		if(move_time != null){
+			vid.currentTime = move_time;
+		}
+			
+
+		//console.log(move_time);
+		//console.log(e);
+		
+	});
+
+	
+		
 }
