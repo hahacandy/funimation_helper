@@ -124,7 +124,7 @@ driver.get('https://www.google.com/search?q=%EA%B5%AC%EA%B8%80+%EB%B2%88%EC%97%A
 
 # "0.0.0.0" => 서버 pc에 ip 주소를 입력해준다.
 # 0000 => 서버 pc에 포트를 입력 해 준다.
-start_server = websockets.serve(accept_func, "localhost", 9990);
+start_server = websockets.serve(accept_func, "0.0.0.0", 9990);
 
 # 비동기로 서버를 대기한다.
 asyncio.get_event_loop().run_until_complete(start_server);
