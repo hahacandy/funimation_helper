@@ -294,6 +294,8 @@ function main6(){
 
 /////////////////한 자막이 끝나면 끝나는 시점에서 정지
 
+var cue_cursor = -1;
+
 function pause_vid_when_end(){
 	
 	var vid = document.getElementsByTagName('video')[0];
@@ -302,9 +304,11 @@ function pause_vid_when_end(){
 		for(i=0; i<vtt_cues.length; i++){
 			
 			if(vid.currentTime > vtt_cues[i].start && vid.currentTime <= vtt_cues[i].end){
+				
+				cue_cursor = i;
+				
 				var vid_current_time = vid.currentTime.toFixed(3);
 				var cue_current_time = vtt_cues[i].end.toFixed(3);
-				
 				
 				//console.log(vid_current_time + ' ' + cue_current_time);
 				if(vid_current_time >= cue_current_time-0.02){
@@ -324,5 +328,81 @@ function main7(){
 	var vid = document.getElementsByTagName('video')[0];
 	
 	setTimeout(pause_vid_when_end, 1);
+
+	main8();
+}
+
+////////////////////////////////영어 자막 번역하기 위함 (소켓)
+
+var webSocket = new WebSocket('ws://192.168.0.49:9990');
+
+webSocket.onerror = function(event) {
+	onError(event)
+};
+
+webSocket.onopen = function(event) {
+	onOpen(event)
+};
+
+webSocket.onmessage = function(event) {
+	onMessage(event)
+};
+
+function onMessage(event) {
+	if(!event.data.toString().includes('Could not read from Socket') && event.data.toString() != 'None'){
+		
+		try{
+			var sub_bar = document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div');
+			
+			sub_bar.textContent = vtt_cues[cue_cursor].text + '\n' + event.data;
+		}catch{}
+
+		//console.log(event.data);
+	}
+}
+
+function onOpen(event) {
+	console.log('Connection established');
+}
+
+function onError(event) {
+	console.log(event.data);
+}
+
+function send(msg) {
 	
+	var data = new Object() ;
+	data.msg = msg;
+	
+	webSocket.send(JSON.stringify(data));
+
+}
+
+////////////////////////////////영어 자막 번역하기 위함 (cue가 바뀌면 자막이 바꼇다고 보고 영어 자막을 보냄)
+
+var latest_cue_cursor = -1;
+
+function check_change_cue(){
+	
+	if(cue_cursor != -1){
+		
+		if(cue_cursor != latest_cue_cursor){
+			try{
+				var sub_bar = document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div');
+				
+				send(sub_bar.textContent);
+			}catch{}
+			
+			latest_cue_cursor = cue_cursor;
+			
+		}
+		
+		
+	}
+	
+	setTimeout(check_change_cue, 100);
+}
+
+function main8(){
+	setTimeout(check_change_cue, 100);
 }
