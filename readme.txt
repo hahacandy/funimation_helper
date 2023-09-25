@@ -1,0 +1,5 @@
+WebSocketをlocalhostではなくほかのパソコンから持ち出そうとすると下記の手順が必要
+
+chromeの場合は
+https://www.damirscorner.com/blog/posts/20210528-AllowingInsecureWebsocketConnections.html
+このurlの通りに設定する必要あり(Insecure content 設定をオフ、videostationサイトだけ)
