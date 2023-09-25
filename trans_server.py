@@ -10,6 +10,8 @@ from io import StringIO
 from selenium.webdriver.common.keys import Keys
 import re
 
+saved_translated_subtitles = {}
+
 def get_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--mute-audio")
@@ -98,10 +100,16 @@ async def accept_func(websocket, path):
             json_data = json.load(io)
             msg = json_data['msg']
 
-            trans_msg= trans_text(driver, msg)
-                                 
-            if trans_msg != None:
+            trans_msg = None
+            
+            if msg in saved_translated_subtitles:
+                trans_msg = saved_translated_subtitles[msg]
+            else:
+                trans_msg= trans_text(driver, msg)
                 trans_msg.strip()
+                saved_translated_subtitles[msg] = trans_msg
+                 
+            if trans_msg != None:
                 print(time.strftime('%Y-%m-%d  %H:%M:%S'), ' : ' + msg + ' -> ' + trans_msg)
                 #client_socket.sendall(trans_msg.encode(encoding="utf-8"))
                 
