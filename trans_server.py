@@ -106,8 +106,8 @@ async def accept_func(websocket, path):
                 #client_socket.sendall(trans_msg.encode(encoding="utf-8"))
                 
                 await websocket.send(trans_msg);# 클라인언트로 echo를 붙여서 재 전송한다.
-        except Exception as e:
-            print(e)
+        except:
+            pass
             
 nest_asyncio.apply()
 

@@ -387,17 +387,19 @@ function check_change_cue(){
 	if(cue_cursor != -1){
 		
 		if(cue_cursor != latest_cue_cursor){
+
 			try{
-				var sub_bar = document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div');
 				
-				send(sub_bar.textContent);
-			}catch{}
-			
-			latest_cue_cursor = cue_cursor;
-			
+				send(vtt_cues[cue_cursor].text);
+				
+				latest_cue_cursor = cue_cursor;
+				
+			}catch(err){
+				console.log(err);
+			}
+
 		}
-		
-		
+
 	}
 	
 	setTimeout(check_change_cue, 100);
