@@ -336,7 +336,7 @@ function main7(){
 
 var webSocket = new WebSocket('ws://192.168.0.49:9990');
 
-var translated_subtitles = null;
+var translated_subtitles = {};
 
 webSocket.onerror = function(event) {
 	onError(event)
@@ -352,7 +352,15 @@ webSocket.onmessage = function(event) {
 
 function onMessage(event) {
 	if(!event.data.toString().includes('Could not read from Socket') && event.data.toString() != 'None'){
-		translated_subtitles = event.data;
+		try{
+			var receive_json = JSON.parse(event.data);
+			
+			translated_subtitles[receive_json.cursor] = receive_json.trans_msg;
+		}catch(err){
+			console.log(err);
+		}
+
+		
 		//console.log(event.data);
 	}
 }
@@ -365,10 +373,7 @@ function onError(event) {
 	console.log(event.data);
 }
 
-function send(msg) {
-	
-	var data = new Object() ;
-	data.msg = msg;
+function send(data) {
 	
 	webSocket.send(JSON.stringify(data));
 
@@ -383,15 +388,23 @@ function check_change_cue(){
 	if(cue_cursor != -1){
 		
 		if(cue_cursor != latest_cue_cursor){
-
-			try{
+			
+			if((cue_cursor in translated_subtitles) == false){
 				
-				send(vtt_cues[cue_cursor].text);
+				try{
+					
+					var data = new Object() ;
+					data.msg = vtt_cues[cue_cursor].text;
+					data.cursor = cue_cursor;
+					
+					send(data);
+					
+					latest_cue_cursor = cue_cursor;
+					
+				}catch(err){
+					console.log(err);
+				}
 				
-				latest_cue_cursor = cue_cursor;
-				
-			}catch(err){
-				console.log(err);
 			}
 
 		}
@@ -408,10 +421,15 @@ function check_change_trans_sub(){
 		var sub_bar = document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div');
 		
 		if(sub_bar != null){
-			var engsub_and_transub = vtt_cues[cue_cursor].text + '\n' + translated_subtitles;
-			if(sub_bar.textContent != engsub_and_transub){
-				sub_bar.textContent = engsub_and_transub;
+			var trans_sub = translated_subtitles[cue_cursor];
+			
+			if(trans_sub!=null){
+				var engsub_and_transub = vtt_cues[cue_cursor].text + '\n' + trans_sub;
+				if(sub_bar.textContent != engsub_and_transub){
+					sub_bar.textContent = engsub_and_transub;
+				}
 			}
+
 		}
 		
 	}

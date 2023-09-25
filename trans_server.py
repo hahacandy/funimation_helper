@@ -99,6 +99,7 @@ async def accept_func(websocket, path):
             io = StringIO(data)
             json_data = json.load(io)
             msg = json_data['msg']
+            cursor = json_data['cursor']
 
             trans_msg = None
             
@@ -111,9 +112,12 @@ async def accept_func(websocket, path):
                  
             if trans_msg != None:
                 print(time.strftime('%Y-%m-%d  %H:%M:%S'), ' : ' + msg + ' -> ' + trans_msg)
+                send_info = json.dumps({'cursor':cursor, 'trans_msg':trans_msg})
+                print(send_info)
+                print()
                 #client_socket.sendall(trans_msg.encode(encoding="utf-8"))
                 
-                await websocket.send(trans_msg);# 클라인언트로 echo를 붙여서 재 전송한다.
+                await websocket.send(send_info);# 클라인언트로 echo를 붙여서 재 전송한다.
         except:
             pass
             
