@@ -18,17 +18,10 @@ def get_driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-setuid-sandbox")
     options.add_argument('--disable-gpu')
-    #options.binary_location = "chromedriver.exe"
-    #options.add_argument('headless')
-    
-    #chrome_version = int(webdriver.Chrome(options=options).capabilities['browserVersion'][0:3])
-    #driver = Chrome(options=options, version_main=chrome_version) #creating a webdriver object
+    options.add_argument('headless')
     
     driver = webdriver.Chrome(options=options)
-    #driver = Chrome(options=options) #creating a webdriver object
     
-    driver.maximize_window()
-   
     return driver
     
 def trans_text(driver, msg):
