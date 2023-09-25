@@ -336,6 +336,8 @@ function main7(){
 
 var webSocket = new WebSocket('ws://192.168.0.49:9990');
 
+var translated_subtitles = null;
+
 webSocket.onerror = function(event) {
 	onError(event)
 };
@@ -350,13 +352,7 @@ webSocket.onmessage = function(event) {
 
 function onMessage(event) {
 	if(!event.data.toString().includes('Could not read from Socket') && event.data.toString() != 'None'){
-		
-		try{
-			var sub_bar = document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div');
-			
-			sub_bar.textContent = vtt_cues[cue_cursor].text + '\n' + event.data;
-		}catch{}
-
+		translated_subtitles = event.data;
 		//console.log(event.data);
 	}
 }
@@ -405,6 +401,26 @@ function check_change_cue(){
 	setTimeout(check_change_cue, 100);
 }
 
+function check_change_trans_sub(){
+	
+	if(cue_cursor != -1){
+	
+		var sub_bar = document.querySelector('#vjs_video_3 > div.vjs-text-track-display > div > div > div');
+		
+		if(sub_bar != null){
+			var engsub_and_transub = vtt_cues[cue_cursor].text + '\n' + translated_subtitles;
+			if(sub_bar.textContent != engsub_and_transub){
+				sub_bar.textContent = engsub_and_transub;
+			}
+		}
+		
+	}
+	
+	setTimeout(check_change_trans_sub, 100);
+}
+
+
 function main8(){
 	setTimeout(check_change_cue, 100);
+	setTimeout(check_change_trans_sub, 100);
 }
