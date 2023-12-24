@@ -1,0 +1,104 @@
+////////////////////////////////영어 자막 번역하기 위함 (소켓)
+
+var webSocket = new WebSocket('ws://192.168.0.49:9990');
+
+var translated_subtitles = {};
+
+webSocket.onerror = function(event) {
+	onError(event)
+};
+
+webSocket.onopen = function(event) {
+	onOpen(event)
+};
+
+webSocket.onmessage = function(event) {
+	onMessage(event)
+};
+
+function onMessage(event) {
+	if(!event.data.toString().includes('Could not read from Socket') && event.data.toString() != 'None'){
+		try{
+			var receive_json = JSON.parse(event.data);
+			
+			translated_subtitles[receive_json.msg] = receive_json.trans_msg;
+		}catch(err){
+			console.log(err);
+		}
+
+		
+		//console.log(event.data);
+	}
+}
+
+function onOpen(event) {
+	console.log('Connection established');
+}
+
+function onError(event) {
+	console.log(event.data);
+}
+
+function send(data) {
+	
+	webSocket.send(JSON.stringify(data));
+
+}
+
+
+////////////////////////////////영어 자막 번역하기 위함 (cue가 바뀌면 자막이 바꼇다고 보고 영어 자막을 보냄)
+
+
+var latest_subtitle_text = '';
+
+function check_change_subtitle_text(){
+	
+	try{
+	
+		var lin_words = document.querySelectorAll(".lln-word,.lln-not-word  ");
+		var extraction_words = [];
+		for(var i = 0; i<lin_words.length; i++){
+			
+			var word = '';
+			if(lin_words[i].childElementCount>=1){
+				word = lin_words[i].childNodes[1].textContent;
+			}else{
+				word = lin_words[i].textContent;
+			}
+			
+			extraction_words.push(word);
+		
+		}
+		var current_subtitle_text = extraction_words.join('');
+		
+		var trans_sub = translated_subtitles[current_subtitle_text];
+		
+		if(trans_sub != null){
+			document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div > span').textContent = trans_sub;
+		}else{
+			
+			if(current_subtitle_text != null && current_subtitle_text.length > 0){
+				
+				if(current_subtitle_text != latest_subtitle_text){
+					
+					var data = new Object() ;
+					data.msg = current_subtitle_text;
+					
+					send(data);
+					
+					console.log(current_subtitle_text);
+				}
+				
+				latest_subtitle_text = current_subtitle_text;
+				
+			}
+			
+		}
+		
+	
+	}catch{}
+	
+	setTimeout(check_change_subtitle_text, 100);
+}
+
+check_change_subtitle_text();
