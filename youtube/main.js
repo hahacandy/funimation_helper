@@ -74,7 +74,14 @@ function check_change_subtitle_text(){
 		var trans_sub = translated_subtitles[current_subtitle_text];
 		
 		if(trans_sub != null){
-			document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div > span').textContent = trans_sub;
+			var trans_sub_bar_element = document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div > span');
+			
+			if(trans_sub_bar_element.textContent != trans_sub){
+				trans_sub_bar_element.style.maxWidth = '';
+				trans_sub_bar_element.textContent = trans_sub;
+				console.log(trans_sub);
+			}
+
 		}else{
 			
 			if(current_subtitle_text != null && current_subtitle_text.length > 0){
