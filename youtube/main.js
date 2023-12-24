@@ -55,7 +55,7 @@ function check_change_subtitle_text(){
 	
 	try{
 	
-		var lin_words = document.querySelectorAll(".lln-word,.lln-not-word  ");
+		var lin_words = document.querySelector('.lln-subs.lln-sentence-wrap').querySelectorAll(".lln-word,.lln-not-word  ");
 		var extraction_words = [];
 		for(var i = 0; i<lin_words.length; i++){
 			
@@ -88,6 +88,8 @@ function check_change_subtitle_text(){
 				
 				if(current_subtitle_text != latest_subtitle_text){
 					
+					document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div > span').textContent = '';
+					
 					var data = new Object() ;
 					data.msg = current_subtitle_text;
 					
@@ -105,7 +107,7 @@ function check_change_subtitle_text(){
 	
 	}catch{}
 	
-	setTimeout(check_change_subtitle_text, 100);
+	setTimeout(check_change_subtitle_text, 1);
 }
 
 check_change_subtitle_text();
