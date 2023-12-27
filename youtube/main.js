@@ -80,6 +80,17 @@ function check_change_subtitle_text(){
 				trans_sub_bar_element.style.maxWidth = '';
 				trans_sub_bar_element.textContent = trans_sub;
 				console.log(trans_sub);
+				
+				//한글 번역된 자막에 블러를 넣고, 마우스를 위에 올리면 선명하게 보이게
+				document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div > span').style.filter='blur(4px)';
+				document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div').onmouseout = function (event) {
+					document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div > span').style.filter='blur(4px)';
+				}
+				document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div').onmouseover = function (event) {
+					document.querySelector('#lln-translations > div.lln-whole-title-translation-wrap > div > span').style.filter='blur(0px)';
+				}
+				
+				
 			}
 
 		}else{
