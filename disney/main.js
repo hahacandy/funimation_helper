@@ -358,14 +358,10 @@ function remove_ori_subtitle(){
 	
 	var ori_subtitle = getElementByXpath('/html/body/div[1]/div/div/div[2]/div/div/div[1]/div/div[1]');
 	
-	if(ori_subtitle == null){
-		setTimeout(remove_ori_subtitle, 1000);
-		
-	}
-	else{
+	if(ori_subtitle != null){
 		ori_subtitle.remove();
 	}
-	
+
 }
 
-setTimeout(remove_ori_subtitle, 1000);
+setInterval(remove_ori_subtitle, 1000);
