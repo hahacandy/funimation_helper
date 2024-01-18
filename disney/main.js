@@ -58,7 +58,7 @@ function check_change_subtitle_text(){
 	
 	try{
 	
-		var current_subtitle_text = getElementByXpath('//*[@id="app_body_content"]/div[7]/div/div[1]/div/div/div[1]/span/span[1]').textContent;
+		var current_subtitle_text = getElementByXpath('/html/body/div[1]/div/div/div[7]/div/div[1]/div').textContent;
 		
 		var trans_sub = translated_subtitles[current_subtitle_text];
 		
@@ -109,3 +109,263 @@ function check_change_subtitle_text(){
 }
 
 check_change_subtitle_text();
+
+
+
+///////////vtt_url 가져오기
+var vtt_url = null;
+
+function get_vtt_url(){
+
+	var performance = window.performance;
+	var networks = performance.getEntries();
+
+	for(i=0; i<networks.length; i++){
+
+		var network = networks[i];
+		
+		if(network.name != null){
+			
+			var url = network['name'];
+
+			if(url.includes('subtitles_') && url.includes('seg_') && url.slice(-4) == '.vtt'){
+				vtt_url = network['name'];
+				console.log(url);
+				break;
+			}
+		}
+	}
+	
+	if(vtt_url == null){
+		setTimeout(get_vtt_url, 100);
+	}else{
+		get_subtitle();
+	}
+	
+}
+get_vtt_url();
+
+
+
+////////vtt_url 에서 실제 자막 가져오기, 시작은 get_vtt_url() 에서 시작됨
+var all_vtt = '';
+var x = null;
+var idx_ = 0;
+var is_getting = false;
+
+function get_subtitle(){
+	
+	var idx = idx_;
+	
+	if(is_getting == false){
+		
+		is_getting = true;
+		
+		var epi_str = '';
+		
+		idx2 = idx.toString();
+		
+		if(idx < 10){
+			epi_str = '00' + idx2;
+		}else if(idx < 100){
+			epi_str = '0' + idx2;
+		}else{
+			epi_str = idx2;
+		}
+
+		
+		var vtt_url2 = vtt_url.slice(0,vtt_url.length-7) + epi_str + '.vtt';
+		
+		console.log(vtt_url2);
+		
+		x = new XMLHttpRequest();
+		x.open("GET", vtt_url2);
+		x.send();
+	}
+	
+	if(x.readyState == '4'){
+		if(x.status == '200'){
+			english_vtt = x.responseText;
+			
+			all_vtt = all_vtt + english_vtt
+
+			idx_ ++
+		}else if(x.status == '404'){
+			idx_ = 999; // 자막 끝까지 가져왔으므로 정지
+		}
+		
+		is_getting = false;
+	}
+		
+	if(idx <= 100){
+		setTimeout(get_subtitle, 100);
+	}else{
+		convert_vtt_to_cue();
+	}
+
+}
+
+//////////////////가져온 vtt 가공하기
+var vtt_cues = [];
+
+function convert_vtt_to_cue(){
+	var temp_split_vtt = all_vtt.split('\n\n');
+	
+	for(var i=0; i<temp_split_vtt.length; i++){
+		if(temp_split_vtt[i].includes(' --> ') == true){
+			
+			var split_vt = temp_split_vtt[i].split('\n');
+			
+			var vtt_cue = new Object();
+			var text_cue = '';
+			
+			for(j=0; j<split_vt.length; j++){
+				
+				if(j==0){
+					split_v = split_vt[j].split(' ');
+					
+					vtt_cue.start = split_v[0];
+					var start_split = vtt_cue.start.split(':');
+					vtt_cue.start = parseFloat((start_split[0]*60*60))+parseFloat((start_split[1]*60))+parseFloat(start_split[2]);
+					
+					vtt_cue.end = split_v[2];
+					var end_split = vtt_cue.end.split(':');
+					vtt_cue.end = parseFloat((end_split[0]*60*60))+parseFloat((end_split[1]*60))+parseFloat(end_split[2]);
+				}else{
+					
+					text_cue = text_cue + split_vt[j];
+					
+					if(j != split_vt.length-1){
+						text_cue = text_cue + '\n';
+					}
+					
+				}
+			}
+			
+			vtt_cue.text = text_cue;
+			
+			vtt_cues.push(vtt_cue);
+			
+		}
+	}
+	
+	add_listener_move_subtitles_time();
+}
+
+//////////////////// 키보드 누르면 자막이동
+
+function get_vide_time(mode, vid_current_time){
+	
+	var move_time = null;
+	
+	if(mode == 'right'){
+		for(i=0; i<vtt_cues.length; i++){
+			if(vid_current_time < vtt_cues[i].start){
+				move_time = vtt_cues[i].start;
+				break;
+			}
+		}
+	}
+	else if(mode == 'left'){
+		
+		for(i=vtt_cues.length-1; i>=0; i--){
+
+			if(vid_current_time > vtt_cues[i].start){
+				
+				var cue_cursor = i-1;
+				if(cue_cursor >= 0){
+					move_time = vtt_cues[cue_cursor].start;
+				}
+				break;
+			}
+		}
+	}
+	else if(mode == 'up'){
+		
+		for(i=0; i<vtt_cues.length; i++){
+			
+			if(vid_current_time < vtt_cues[i].start){
+				
+				var cue_cursor = i-1;
+				if(cue_cursor >= 0){
+					move_time = vtt_cues[cue_cursor].start;
+				}
+				break;
+			}
+		}
+	}
+
+	//console.log(move_time);
+	return move_time;
+}
+
+function add_listener_move_subtitles_time(){
+	//const target = document.querySelector('#hudson-wrapper');
+	
+	document.addEventListener("keydown", (e) => {
+		
+		var vid = document.getElementsByTagName('video')[0];
+		
+		var vid_current_time = vid.currentTime;
+		
+		var move_time = null;
+		
+		if (e.code == "Numpad4") {
+			if(vtt_cues.length == 0){
+				var preTime = vid.currentTime - 3;
+				if (preTime > 0) {
+					vid.currentTime = preTime;
+				}
+			}else{
+				move_time = get_vide_time('left', vid_current_time);
+			}
+		}else if (e.code == "Numpad6") {
+			if(vtt_cues.length == 0){
+				var nextTime = vid.currentTime + 3;
+				if (nextTime+3 < vid.duration) {
+					vid.currentTime = nextTime;
+				}
+			}else{
+				move_time = get_vide_time('right', vid_current_time);
+			}
+		}else if (e.code == "Numpad8") {
+			move_time = get_vide_time('up', vid_current_time);
+		}else if (e.code == "Numpad0") {
+			if(vid.paused){
+				vid.play();
+			}else{
+				vid.pause();
+			}
+		}
+		
+		if(move_time != null){
+			vid.currentTime = move_time;
+			vid.play();
+		}
+			
+
+		//console.log(move_time);
+		//console.log(e);
+		
+	});
+
+}
+
+
+//////// 원래 자막 지우기
+
+function remove_ori_subtitle(){
+	
+	var ori_subtitle = getElementByXpath('/html/body/div[1]/div/div/div[2]/div/div/div[1]/div/div[1]');
+	
+	if(ori_subtitle == null){
+		setTimeout(remove_ori_subtitle, 1000);
+		
+	}
+	else{
+		ori_subtitle.remove();
+	}
+	
+}
+
+setTimeout(remove_ori_subtitle, 1000);
