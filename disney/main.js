@@ -330,7 +330,7 @@ function add_listener_move_subtitles_time(){
 			}
 		}else if (e.code == "Numpad8") {
 			move_time = get_vide_time('up', vid_current_time);
-		}else if (e.code == "Numpad0") {
+		}else if (e.code == "Numpad0" || e.code == "Numpad5") {
 			if(vid.paused){
 				vid.play();
 			}else{
