@@ -333,9 +333,12 @@ function create_subtitle(){
 		document.querySelector('#app_body_content').appendChild(temp_ele);
 		
 
-		// 자막에 마우스 누르고 위아래 움직 일 수 잇게 하기
+		// 번역된 자막에 마우스 누르고 위아래 움직 일 수 잇게 하기
 		
 		my_subtitles = document.querySelector('#subtitles');
+		my_subtitles.style.display = 'none';
+		
+		target_el = document.querySelector('#subtitle-2');
 		
 
 		my_subtitles.style.top = getCookie('subtitle_top'); // 이전 자막 위치 값 불러오기
@@ -347,12 +350,12 @@ function create_subtitle(){
 		let startX = 0; 
 		let startY = 0; 
 		
-		my_subtitles.addEventListener('mousedown', function(e){
+		target_el.addEventListener('mousedown', function(e){
 		  //e.preventDefault(); 
 		  startX = e.clientX; 
 		  startY = e.clientY; 
 			
-		  my_subtitles.classList.add('active');
+		  target_el.classList.add('active');
 		  
 		  document.addEventListener('mouseup', onRemoveEvent); 
 		  
@@ -360,7 +363,7 @@ function create_subtitle(){
 		});
 		
 		function onRemoveEvent() { 
-		  my_subtitles.classList.remove('active');
+		  target_el.classList.remove('active');
 		  document.removeEventListener('mouseup', onRemoveEvent); 
 		  document.removeEventListener('mousemove', onMove); 
 		} 
@@ -446,10 +449,29 @@ function change_subtitle_cue(){
 			document.querySelector('#subtitle-1').innerHTML = subtitle_1 ;
 			document.querySelector('#subtitle-2').innerHTML = subtitle_2 ;
 			
+			
+			// 자막 객체 숨기거나 보이게, 백그라운드 색상이 안남기 위해서 1
+			if(subtitle_1 == ''){
+				document.querySelector('#subtitle-1').style.display = 'none';
+			}else{
+				document.querySelector('#subtitle-1').style.display = '';
+			}
+			
+			if(subtitle_2 == ''){
+				document.querySelector('#subtitle-2').style.display = 'none';
+			}
+			
 			cue_will_stop = true;
 		}
 
 	}
+	// 자막 객체 숨기거나 보이게, 백그라운드 색상이 안남기 위해서 2
+	if(document.querySelector('#subtitle-1').innerHTML == '' && document.querySelector('#subtitle-2').innerHTML == ''){
+		document.querySelector('#subtitles').style.display = 'none';
+	}else{
+		document.querySelector('#subtitles').style.display = '';
+	}
+
 	
 }
 
@@ -559,7 +581,10 @@ function check_change_subtitle_text(){
 				//trans_sub_bar_element.setAttribute('data-text', '');
 				//trans_sub_bar_element.setAttribute('data-value', '');
 				trans_sub_bar_element.textContent = trans_sub;
+				trans_sub_bar_element.style.display = '';
 				console.log(trans_sub);
+				
+					
 
 			}
 
