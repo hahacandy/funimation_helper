@@ -1,115 +1,34 @@
-var translated_subtitles = {};
+/////////////////////////////// 드래그 가능하게
+(function () {
+    if (window.subvaAllowRightClick === undefined) {
+        // https://greasyfork.org/en/scripts/23772-absolute-enable-right-click-copy/code
+        window.subvaAllowRightClick = function (dom) {
+            (function GetSelection() {
+                var Style = dom.createElement('style');
+                Style.type = 'text/css';
+                var TextNode = '*{user-select:text!important;-webkit-user-select:text!important;}';
+                if (Style.styleSheet) {
+                    Style.styleSheet.cssText = TextNode;
+                }
+                else {
+                    Style.appendChild(dom.createTextNode(TextNode));
+                }
+                dom.getElementsByTagName('head')[0].appendChild(Style);
+            })();
 
-////////////////////////////////영어 자막 번역하기 위함 (소켓)
-
-var webSocket = new WebSocket('ws://192.168.0.49:9990');
-
-webSocket.onerror = function(event) {
-	onError(event)
-};
-
-webSocket.onopen = function(event) {
-	onOpen(event)
-};
-
-webSocket.onmessage = function(event) {
-	onMessage(event)
-};
-
-function onMessage(event) {
-	if(!event.data.toString().includes('Could not read from Socket') && event.data.toString() != 'None'){
-		try{
-			var receive_json = JSON.parse(event.data);
-			
-			translated_subtitles[receive_json.msg] = receive_json.trans_msg;
-		}catch(err){
-			console.log(err);
-		}
-
-		
-		//console.log(event.data);
-	}
-}
-
-function onOpen(event) {
-	console.log('Connection established');
-}
-
-function onError(event) {
-	console.log(event.data);
-}
-
-function send(data) {
-	
-	webSocket.send(JSON.stringify(data));
-
-}
-
-
-////////////////////////////////영어 자막 번역하기 위함 (cue가 바뀌면 자막이 바꼇다고 보고 영어 자막을 보냄)
-
-var latest_subtitle_text = '';
-
-function getElementByXpath(path) {
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
-
-function check_change_subtitle_text(){
-	
-	try{
-	
-		var current_subtitle_text = getElementByXpath('/html/body/div[1]/div/div/div[7]/div/div[1]/div').textContent;
-		
-		var trans_sub = translated_subtitles[current_subtitle_text];
-		
-		if(trans_sub != null){
-			var trans_sub_bar_element = getElementByXpath('//*[@id="app_body_content"]/div[7]/div/div[2]/div/div/div[1]/span/span[1]');
-			
-			if(trans_sub_bar_element.textContent != trans_sub){
-				
-				trans_sub_bar_element.setAttribute('data-text', '');
-				trans_sub_bar_element.setAttribute('data-value', '');
-				trans_sub_bar_element.textContent = trans_sub;
-				console.log(trans_sub);
-
-			}
-
-		}else{
-
-			if(current_subtitle_text != null && current_subtitle_text.length > 0){
-
-				if(current_subtitle_text != latest_subtitle_text){
-					
-					
-					trans_sub_bar_element = getElementByXpath('//*[@id="app_body_content"]/div[7]/div/div[2]/div/div/div[1]/span/span[1]');
-					trans_sub_bar_element.setAttribute('data-text', '');
-					trans_sub_bar_element.setAttribute('data-value', '');
-					trans_sub_bar_element.textContent = '';
-					
-
-					
-					var data = new Object() ;
-					data.msg = current_subtitle_text;
-					
-					send(data);
-					
-					console.log(current_subtitle_text);
-				}
-
-				latest_subtitle_text = current_subtitle_text;
-				
-			}
-			
-		}
-		
-	
-	}catch{}
-	
-	setTimeout(check_change_subtitle_text, 10);
-}
-
-check_change_subtitle_text();
-
+        };
+        function runAll(w) {
+            try {
+                window.subvaAllowRightClick(w.document);
+            } catch (e) {
+            }
+            for (var i = 0; i < w.frames.length; i++) {
+                runAll(w.frames[i]);
+            }
+        }
+    }	
+    runAll(window);
+})();
 
 
 ///////////vtt_url 가져오기
@@ -365,3 +284,195 @@ function remove_ori_subtitle(){
 }
 
 setInterval(remove_ori_subtitle, 1000);
+
+//////////// 자막 부분 생성
+
+function create_subtitle(){
+	
+	var my_subtitles = document.querySelector('#subtitles');
+	
+	if(my_subtitles == null){
+		
+		var temp_ele = document.createElement('div');
+		temp_ele.id = 'subtitles';
+		var temp_ele2 = document.createElement('div');
+		temp_ele2.id = 'subtitle-1';
+		var temp_ele3 = document.createElement('div');
+		temp_ele3.id = 'subtitle-2';
+		
+		temp_ele.appendChild(temp_ele2);
+		temp_ele.appendChild(temp_ele3);
+		
+		document.querySelector('#app_body_content').appendChild(temp_ele);
+		
+		console.log('자막 부분 생성 완료');
+
+	}
+}
+
+setInterval(create_subtitle, 1000);
+/////////// 생성된 자막 부분에 영어 자막 시간에 맞게 
+
+function change_subtitle_cue(){
+	
+	var video = document.querySelector("video");
+	var is_change = false;
+	
+	vtt_cues.forEach(function(vtt_cue) {
+		
+		video_current_time = video.currentTime;
+		
+		if(vtt_cue.start <= video_current_time && video_current_time < vtt_cue.end){
+			
+			if(document.querySelector('#subtitle-1').innerHTML != vtt_cue.text){
+				document.querySelector('#subtitle-1').innerHTML = vtt_cue.text;
+				console.log(vtt_cue.text);
+			}
+
+			is_change = true;
+			
+		}
+		
+	});
+	
+	if(is_change == false){
+		document.querySelector('#subtitle-1').innerHTML = '' ;
+		document.querySelector('#subtitle-2').innerHTML = '' ;
+	}
+	
+}
+
+
+//////// 비디오 객체에 timeupdate 리스너를 달고 여기다가 자막 바뀌는 함수를 쓰기위함
+
+function add_video_listener(){
+	
+	var video = document.querySelector("video");
+	if(video != null){
+		if(video.className.includes('my_subtitles') == false){
+			
+			video.addEventListener("timeupdate", (event) => {
+				change_subtitle_cue();
+			});
+			
+			video.className = video.className + ' my_subtitles';
+			console.log('비디오 객체 timeupdate 리스너 달기 완료');
+		}
+	}
+}
+
+setInterval(add_video_listener, 1000);
+
+
+
+////////////////////////////////영어 자막 번역하기 위함 (소켓)
+
+var translated_subtitles = {};
+
+var webSocket = new WebSocket('ws://192.168.0.49:9990');
+
+webSocket.onerror = function(event) {
+	onError(event)
+};
+
+webSocket.onopen = function(event) {
+	onOpen(event)
+};
+
+webSocket.onmessage = function(event) {
+	onMessage(event)
+};
+
+function onMessage(event) {
+	if(!event.data.toString().includes('Could not read from Socket') && event.data.toString() != 'None'){
+		try{
+			var receive_json = JSON.parse(event.data);
+			
+			translated_subtitles[receive_json.msg] = receive_json.trans_msg;
+		}catch(err){
+			console.log(err);
+		}
+
+		
+		//console.log(event.data);
+	}
+}
+
+function onOpen(event) {
+	console.log('Connection established');
+}
+
+function onError(event) {
+	console.log(event.data);
+}
+
+function send(data) {
+	
+	webSocket.send(JSON.stringify(data));
+
+}
+
+
+////////////////////////////////영어 자막 번역하기 위함 (cue가 바뀌면 자막이 바꼇다고 보고 영어 자막을 보냄)
+
+var latest_subtitle_text = '';
+
+function getElementByXpath(path) {
+  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+}
+
+function check_change_subtitle_text(){
+	
+	try{
+	
+		var current_subtitle_text = document.querySelector('#subtitle-1').textContent;
+		
+		var trans_sub = translated_subtitles[current_subtitle_text];
+		
+		if(trans_sub != null){
+			var trans_sub_bar_element = document.querySelector('#subtitle-2');
+			
+			if(trans_sub_bar_element.textContent != trans_sub){
+				
+				//trans_sub_bar_element.setAttribute('data-text', '');
+				//trans_sub_bar_element.setAttribute('data-value', '');
+				trans_sub_bar_element.textContent = trans_sub;
+				console.log(trans_sub);
+
+			}
+
+		}else{
+
+			if(current_subtitle_text != null && current_subtitle_text.length > 0){
+
+				if(current_subtitle_text != latest_subtitle_text){
+					
+					
+					trans_sub_bar_element = document.querySelector('#subtitle-2');
+					//trans_sub_bar_element.setAttribute('data-text', '');
+					//trans_sub_bar_element.setAttribute('data-value', '');
+					trans_sub_bar_element.textContent = '';
+					
+
+					
+					var data = new Object() ;
+					data.msg = current_subtitle_text;
+					
+					send(data);
+					
+					console.log(current_subtitle_text);
+				}
+
+				latest_subtitle_text = current_subtitle_text;
+				
+			}
+			
+		}
+		
+	
+	}catch{}
+	
+	setTimeout(check_change_subtitle_text, 10);
+}
+
+check_change_subtitle_text();
