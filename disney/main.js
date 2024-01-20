@@ -317,9 +317,54 @@ function create_subtitle(){
 		
 		console.log('자막 부분 생성 완료');
 		
+		
+		my_subtitles = document.querySelector('#subtitles');
+		
+		// 자막에 마우스 누르고 위아래 움직 일 수 잇게 하기
+		
+		
+		let lastX = 0;
+		let lastY = 0; 
+		let startX = 0; 
+		let startY = 0; 
+		
+		my_subtitles.addEventListener('mousedown', function(e){
+		  //e.preventDefault(); 
+		  startX = e.clientX; 
+		  startY = e.clientY; 
+			
+		  my_subtitles.classList.add('active');
+		  
+		  document.addEventListener('mouseup', onRemoveEvent); 
+		  
+		  document.addEventListener('mousemove', onMove); 
+		});
+		
+		function onRemoveEvent() { 
+		  my_subtitles.classList.remove('active');
+		  document.removeEventListener('mouseup', onRemoveEvent); 
+		  document.removeEventListener('mousemove', onMove); 
+		} 
+		
+		function onMove(e) { 
+		  //e.preventDefault(); 
+
+		  lastY = startY - e.clientY; 
+		
+		  startY = e.clientY; 
+		  
+		  my_subtitles.style.top = (my_subtitles.offsetTop - lastY) + 'px';
+
+		}
+		
+		
+		
 
 	}
 }
+
+
+
 
 setInterval(create_subtitle, 1000);
 /////////// 생성된 자막 부분에 영어 자막 시간에 맞게 

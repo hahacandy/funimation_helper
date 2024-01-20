@@ -1,6 +1,5 @@
 #subtitles {
     position: absolute;
-    bottom: 150px;
     left: 0;
     right: 0;
     margin: auto;
@@ -10,6 +9,7 @@
     font-size: calc(100vw / 1920 * 18 + 18px);
     text-shadow: rgb(0, 0, 0) 0px 0px 7px, rgba(0, 0, 0, 0.8) 0px 0px 18px;
     font-weight: 700;
+    display: block;
 }
 
 #subtitle-1, #subtitle-2{
