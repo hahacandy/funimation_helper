@@ -315,13 +315,10 @@ function create_subtitle(){
 		
 		document.querySelector('#app_body_content').appendChild(temp_ele);
 		
-		console.log('자막 부분 생성 완료');
-		
-		
-		my_subtitles = document.querySelector('#subtitles');
-		
+
 		// 자막에 마우스 누르고 위아래 움직 일 수 잇게 하기
 		
+		my_subtitles = document.querySelector('#subtitles');
 		
 		let lastX = 0;
 		let lastY = 0; 
@@ -358,8 +355,8 @@ function create_subtitle(){
 		}
 		
 		
+		console.log('자막 부분 생성 완료');
 		
-
 	}
 }
 
