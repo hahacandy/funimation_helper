@@ -32,6 +32,23 @@
 
 
 
+/////////////////////////////////  기본 함수들
+
+var setCookie = function(name, value, exp) {
+	var date = new Date();
+	date.setTime(date.getTime() + exp*24*60*60);
+	document.cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
+};
+var getCookie = function(name) {
+	var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+	return value? value[2] : null;
+};
+function getElementByXpath(path) {
+  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+}
+
+
+
 ///////////vtt_url 가져오기
 var vtt_url = null;
 
@@ -320,6 +337,11 @@ function create_subtitle(){
 		
 		my_subtitles = document.querySelector('#subtitles');
 		
+
+		my_subtitles.style.top = getCookie('subtitle_top'); // 이전 자막 위치 값 불러오기
+		
+		
+		
 		let lastX = 0;
 		let lastY = 0; 
 		let startX = 0; 
@@ -350,10 +372,17 @@ function create_subtitle(){
 		
 		  startY = e.clientY; 
 		  
-		  my_subtitles.style.top = (my_subtitles.offsetTop - lastY) + 'px';
-
+		  var subtitle_top = (my_subtitles.offsetTop - lastY);
+		  
+		  if(subtitle_top >= 0 && subtitle_top < document.body.offsetHeight-150){
+			  	
+			  my_subtitles.style.top = (my_subtitles.offsetTop - lastY) + 'px';
+			  
+			  setCookie('subtitle_top', my_subtitles.style.top, 999);
+		  	
+		  }
+		  
 		}
-		
 		
 		console.log('자막 부분 생성 완료');
 		
@@ -484,10 +513,6 @@ function send(data) {
 ////////////////////////////////영어 자막 번역하기 위함 (cue가 바뀌면 자막이 바꼇다고 보고 영어 자막을 보냄)
 
 var latest_subtitle_text = '';
-
-function getElementByXpath(path) {
-  return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-}
 
 function check_change_subtitle_text(){
 	
