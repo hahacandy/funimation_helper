@@ -31,15 +31,16 @@
 })();
 
 
+
 ///////////vtt_url 가져오기
 var vtt_url = null;
 
 function get_vtt_url(){
-
+	
 	var performance = window.performance;
 	var networks = performance.getEntries();
 
-	for(i=0; i<networks.length; i++){
+	for(i=networks.length-1; 0<=i; i--){
 
 		var network = networks[i];
 		
@@ -63,8 +64,6 @@ function get_vtt_url(){
 	
 }
 get_vtt_url();
-
-
 
 ////////vtt_url 에서 실제 자막 가져오기, 시작은 get_vtt_url() 에서 시작됨
 var all_vtt = '';
@@ -128,6 +127,7 @@ function get_subtitle(){
 var vtt_cues = [];
 
 function convert_vtt_to_cue(){
+	
 	var temp_split_vtt = all_vtt.split('\n\n');
 	
 	for(var i=0; i<temp_split_vtt.length; i++){
@@ -218,10 +218,7 @@ function get_vide_time(mode, vid_current_time){
 	return move_time;
 }
 
-function add_listener_move_subtitles_time(){
-	//const target = document.querySelector('#hudson-wrapper');
-	
-	document.addEventListener("keydown", (e) => {
+const video_event_listener = (e) => {
 		
 		var vid = document.getElementsByTagName('video')[0];
 		
@@ -250,11 +247,15 @@ function add_listener_move_subtitles_time(){
 		}else if (e.code == "Numpad8") {
 			move_time = get_vide_time('up', vid_current_time);
 		}else if (e.code == "Numpad0" || e.code == "Numpad5") {
+			
+			//console.log(vid.paused);
+			
 			if(vid.paused){
 				vid.play();
 			}else{
 				vid.pause();
 			}
+
 		}
 		
 		if(move_time != null){
@@ -266,8 +267,16 @@ function add_listener_move_subtitles_time(){
 		//console.log(move_time);
 		//console.log(e);
 		
-	});
+	}
 
+
+function add_listener_move_subtitles_time(){
+
+	try{
+		document.removeEventListener("keydown", video_event_listener);
+	}catch{}
+	document.addEventListener("keydown", video_event_listener);
+	
 }
 
 
@@ -286,6 +295,7 @@ function remove_ori_subtitle(){
 setInterval(remove_ori_subtitle, 1000);
 
 //////////// 자막 부분 생성
+
 
 function create_subtitle(){
 	
@@ -306,6 +316,7 @@ function create_subtitle(){
 		document.querySelector('#app_body_content').appendChild(temp_ele);
 		
 		console.log('자막 부분 생성 완료');
+		
 
 	}
 }
@@ -326,7 +337,7 @@ function change_subtitle_cue(){
 			
 			if(document.querySelector('#subtitle-1').innerHTML != vtt_cue.text){
 				document.querySelector('#subtitle-1').innerHTML = vtt_cue.text;
-				console.log(vtt_cue.text);
+				//console.log(vtt_cue.text);
 			}
 
 			is_change = true;
@@ -344,7 +355,7 @@ function change_subtitle_cue(){
 
 
 //////// 비디오 객체에 timeupdate 리스너를 달고 여기다가 자막 바뀌는 함수를 쓰기위함
-
+var next = false; // 다음 에피소드로 이동하면 초기화해줘야 할게 잇어서
 function add_video_listener(){
 	
 	var video = document.querySelector("video");
@@ -357,6 +368,21 @@ function add_video_listener(){
 			
 			video.className = video.className + ' my_subtitles';
 			console.log('비디오 객체 timeupdate 리스너 달기 완료');
+			
+		
+			//다음 에피소드로 넘어가서 새로 가져와야할 때
+			if(next== true){
+				vtt_url = null;
+				all_vtt = '';
+				x = null;
+				idx_ = 0;
+				is_getting = false;
+				vtt_cues = [];
+				
+				setTimeout(get_vtt_url, 3000);
+			}
+			next = true;
+			
 		}
 	}
 }
