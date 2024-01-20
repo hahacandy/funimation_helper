@@ -395,9 +395,15 @@ function create_subtitle(){
 setInterval(create_subtitle, 1000);
 /////////// 생성된 자막 부분에 영어 자막 시간에 맞게 
 
+var cue_will_stop = false; // 한 문장이 끝나면 자동으로 멈추게 하기 위함
+
 function change_subtitle_cue(){
 	
 	var video = document.querySelector("video");
+	var is_not_null = false;
+	
+	var subtitle_1 = null;
+	var subtitle_2 = '';
 	var is_change = false;
 	
 	vtt_cues.forEach(function(vtt_cue) {
@@ -407,19 +413,42 @@ function change_subtitle_cue(){
 		if(vtt_cue.start <= video_current_time && video_current_time < vtt_cue.end){
 			
 			if(document.querySelector('#subtitle-1').innerHTML != vtt_cue.text){
-				document.querySelector('#subtitle-1').innerHTML = vtt_cue.text;
-				//console.log(vtt_cue.text);
+				
+				subtitle_1 = vtt_cue.text;
+				is_change = true;
+				
 			}
 
-			is_change = true;
+			is_not_null = true;
 			
 		}
 		
 	});
 	
-	if(is_change == false){
-		document.querySelector('#subtitle-1').innerHTML = '' ;
-		document.querySelector('#subtitle-2').innerHTML = '' ;
+	if(is_not_null == false){
+		
+		subtitle_1 = '';
+		is_change = true;
+		
+	}
+	
+	if(is_change == true){
+		
+		if(document.querySelector('#subtitle-1').innerHTML.length > 0){
+			
+			if(cue_will_stop == true){
+				video.pause();
+				cue_will_stop = false;
+			}
+		}
+		
+		if(video.paused == false){
+			document.querySelector('#subtitle-1').innerHTML = subtitle_1 ;
+			document.querySelector('#subtitle-2').innerHTML = subtitle_2 ;
+			
+			cue_will_stop = true;
+		}
+
 	}
 	
 }
