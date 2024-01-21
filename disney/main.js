@@ -190,9 +190,8 @@ function convert_vtt_to_cue(){
 
 //////////////////// 키보드 누르면 자막이동
 
-function get_vide_time(mode, vid_current_time){
+function get_vide_time(mode, vid_current_time, vid_paused){
 	
-
 	var move_time = null;
 	
 	if(mode == 'right'){
@@ -205,9 +204,12 @@ function get_vide_time(mode, vid_current_time){
 	}
 	else if(mode == 'left'){
 		
+		if(vid_paused==true)
+			vid_current_time = vid_current_time-0.3;
+		
 		for(i=vtt_cues.length-1; i>=0; i--){
 
-			if(vid_current_time-0.3 > vtt_cues[i].start){
+			if(vid_current_time > vtt_cues[i].start){
 				
 				var cue_cursor = i-1;
 				if(cue_cursor >= 0){
@@ -219,9 +221,12 @@ function get_vide_time(mode, vid_current_time){
 	}
 	else if(mode == 'up'){
 		
+		if(vid_paused==true)
+			vid_current_time = vid_current_time-0.3;
+		
 		for(i=0; i<vtt_cues.length; i++){
 			
-			if(vid_current_time-0.3 < vtt_cues[i].start){
+			if(vid_current_time < vtt_cues[i].start){
 				
 				var cue_cursor = i-1;
 				if(cue_cursor >= 0){
@@ -251,7 +256,7 @@ const video_event_listener = (e) => {
 					vid.currentTime = preTime;
 				}
 			}else{
-				move_time = get_vide_time('left', vid_current_time);
+				move_time = get_vide_time('left', vid_current_time, vid.paused);
 			}
 		}else if (e.code == "Numpad6") {
 			if(vtt_cues.length == 0){
@@ -260,11 +265,11 @@ const video_event_listener = (e) => {
 					vid.currentTime = nextTime;
 				}
 			}else{
-				move_time = get_vide_time('right', vid_current_time);
+				move_time = get_vide_time('right', vid_current_time, vid.paused);
 			}
 		}else if (e.code == "Numpad8") {
 			cue_will_stop = true;
-			move_time = get_vide_time('up', vid_current_time);
+			move_time = get_vide_time('up', vid_current_time, vid.paused);
 		}else if (e.code == "Numpad0" || e.code == "Numpad5") {
 			
 			//console.log(vid.paused);
