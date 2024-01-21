@@ -52,6 +52,8 @@ function getElementByXpath(path) {
 ///////////vtt_url 가져오기
 var vtt_url = null;
 
+var link_used = [];
+
 function get_vtt_url(){
 	
 	var performance = window.performance;
@@ -66,19 +68,42 @@ function get_vtt_url(){
 			var url = network['name'];
 
 			if(url.includes('subtitles_') && url.includes('seg_') && url.slice(-4) == '.vtt'){
-				vtt_url = network['name'];
-				console.log(url);
-				break;
+				
+				var temp = url.split(0);
+				
+				if(temp.length > 7){
+					
+					var is_used = false;
+					
+					var current_token = temp[6];
+					
+					for(var i=0; i<link_used.length; i++){
+						if(current_token == link_used[i]){
+							is_used = true;
+							break;
+						}
+					}
+					
+					if(is_used == false){
+						link_used.push(current_token);
+						vtt_url = url;
+						//console.log(url);
+						break;
+					}
+
+				}
+				
 			}
 		}
 	}
 	
-	if(vtt_url == null){
-		setTimeout(get_vtt_url, 100);
-	}else{
+	if(vtt_url != null){
 		get_subtitle();
+
+	}else{
+		setTimeout(get_vtt_url, 100);
 	}
-	
+
 }
 get_vtt_url();
 
@@ -87,6 +112,7 @@ var all_vtt = '';
 var x = null;
 var idx_ = 0;
 var is_getting = false;
+
 
 function get_subtitle(){
 	
@@ -108,7 +134,6 @@ function get_subtitle(){
 			epi_str = idx2;
 		}
 
-		
 		var vtt_url2 = vtt_url.slice(0,vtt_url.length-7) + epi_str + '.vtt';
 		
 		console.log(vtt_url2);
@@ -506,7 +531,7 @@ function add_video_listener(){
 				is_getting = false;
 				vtt_cues = [];
 				
-				setTimeout(get_vtt_url, 5000);
+				get_vtt_url();
 			}
 			next = true;
 			
