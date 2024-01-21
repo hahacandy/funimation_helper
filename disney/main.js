@@ -217,45 +217,79 @@ function convert_vtt_to_cue(){
 
 function get_vide_time(mode, vid_current_time, vid_paused){
 	
+	var subtitle_1_el = document.querySelector('#subtitle-1');
+	var current_sub_html = null;
+	
+	if(subtitle_1_el != null){
+		current_sub_html = subtitle_1_el.innerHTML;
+	}
+	
 	if(vid_paused==true)
 		vid_current_time = vid_current_time-0.3;
 	
 	var move_time = null;
 	
+	var current_cue_cursor = null;
+	
+	for(i=0; i<vtt_cues.length; i++){
+		
+		if(vtt_cues[i].text == current_sub_html){
+			current_cue_cursor = i;
+		}
+		
+	}
+	
 	if(mode == 'right'){
 		
-		for(i=0; i<vtt_cues.length; i++){
-			if(vid_current_time < vtt_cues[i].start){
-				move_time = vtt_cues[i].start;
-				break;
+		if(current_cue_cursor != null){
+			var move_cursor = current_cue_cursor+1;
+			if(move_cursor < vtt_cues.length){
+				move_time = vtt_cues[move_cursor].start;
+			}
+		}else{
+			for(i=0; i<vtt_cues.length; i++){
+				if(vid_current_time < vtt_cues[i].start){
+					move_time = vtt_cues[i].start;
+					break;
+				}
 			}
 		}
+
+
 	}
 	else if(mode == 'left'){
 		
-		for(i=vtt_cues.length-1; i>=0; i--){
-
-			if(vid_current_time > vtt_cues[i].start){
-				
-				var cue_cursor = i-1;
-				if(cue_cursor >= 0){
-					move_time = vtt_cues[cue_cursor].start;
+		if(current_cue_cursor != null){
+			var move_cursor = current_cue_cursor-1;
+			if(move_cursor >= 0){
+				move_time = vtt_cues[move_cursor].start;
+			}
+		}else{
+			for(i=vtt_cues.length-1; i>=0; i--){
+				if(vid_current_time > vtt_cues[i].start){
+					var cue_cursor = i-1;
+					if(cue_cursor >= 0){
+						move_time = vtt_cues[cue_cursor].start;
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
 	else if(mode == 'up'){
 		
-		for(i=0; i<vtt_cues.length; i++){
-			
-			if(vid_current_time < vtt_cues[i].start){
-				
-				var cue_cursor = i-1;
-				if(cue_cursor >= 0){
-					move_time = vtt_cues[cue_cursor].start;
+		if(current_cue_cursor != null){
+			var move_cursor = current_cue_cursor;
+			move_time = vtt_cues[move_cursor].start;
+		}else{
+			for(i=0; i<vtt_cues.length; i++){
+				if(vid_current_time < vtt_cues[i].start){
+					var cue_cursor = i-1;
+					if(cue_cursor >= 0){
+						move_time = vtt_cues[cue_cursor].start;
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
@@ -580,6 +614,8 @@ function onMessage(event) {
 			var receive_json = JSON.parse(event.data);
 			
 			translated_subtitles[receive_json.msg] = receive_json.trans_msg;
+			
+			console.log(translated_subtitles[receive_json.msg]);
 		}catch(err){
 			console.log(err);
 		}
@@ -625,7 +661,7 @@ function check_change_subtitle_text(){
 				//trans_sub_bar_element.setAttribute('data-value', '');
 				trans_sub_bar_element.textContent = trans_sub;
 				trans_sub_bar_element.style.display = '';
-				console.log(trans_sub);
+				//console.log(trans_sub);
 				
 					
 
