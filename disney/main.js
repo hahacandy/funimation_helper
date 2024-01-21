@@ -207,7 +207,7 @@ function get_vide_time(mode, vid_current_time){
 		
 		for(i=vtt_cues.length-1; i>=0; i--){
 
-			if(vid_current_time > vtt_cues[i].start){
+			if(vid_current_time-0.3 > vtt_cues[i].start){
 				
 				var cue_cursor = i-1;
 				if(cue_cursor >= 0){
