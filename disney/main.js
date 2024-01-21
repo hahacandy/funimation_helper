@@ -243,37 +243,39 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 		
 	}
 	
+	var current_cue_cursor2 = null;
+	
+	for(i=0; i<vtt_cues.length; i++){
+		if(vid_current_time < vtt_cues[i].start){
+			current_cue_cursor2 = i;
+			break;
+		}
+	}
+	
 	if(mode == 'right'){
 		move_cursor = current_cue_cursor+1;
-		if(current_cue_cursor != null && latest_move_cursor != move_cursor){
+		if(current_cue_cursor != null && latest_move_cursor != move_cursor && (latest_move_cursor+1) == move_cursor){
 			if(move_cursor < vtt_cues.length){
 				move_time = vtt_cues[move_cursor].start;
 			}
 		}else{
-			for(i=0; i<vtt_cues.length; i++){
-				if(vid_current_time < vtt_cues[i].start){
-					move_time = vtt_cues[i].start;
-					break;
-				}
+			if(current_cue_cursor2 != null){
+				move_time = vtt_cues[current_cue_cursor2].start;
 			}
 		}
-
-
 	}
 	else if(mode == 'left'){
 		move_cursor = current_cue_cursor-1;
-		if(current_cue_cursor != null && latest_move_cursor != move_cursor){
+		if(current_cue_cursor != null && latest_move_cursor != move_cursor && (latest_move_cursor-1) == move_cursor){
 			if(move_cursor >= 0){
 				move_time = vtt_cues[move_cursor].start;
 			}
 		}else{
-			for(i=vtt_cues.length-1; i>=0; i--){
-				if(vid_current_time > vtt_cues[i].start){
-					var cue_cursor = i-1;
-					if(cue_cursor >= 0){
-						move_time = vtt_cues[cue_cursor].start;
-					}
-					break;
+			if(current_cue_cursor2 != null){
+				move_time = vtt_cues[current_cue_cursor2].start;
+				var cue_cursor = current_cue_cursor2-2;
+				if(cue_cursor >= 0){
+					move_time = vtt_cues[cue_cursor].start;
 				}
 			}
 		}
@@ -284,13 +286,12 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 			var move_cursor = current_cue_cursor;
 			move_time = vtt_cues[move_cursor].start;
 		}else{
-			for(i=0; i<vtt_cues.length; i++){
-				if(vid_current_time < vtt_cues[i].start){
-					var cue_cursor = i-1;
-					if(cue_cursor >= 0){
-						move_time = vtt_cues[cue_cursor].start;
-					}
-					break;
+			if(current_cue_cursor2 != null){
+				move_time = vtt_cues[current_cue_cursor2].start;
+				
+				var cue_cursor = current_cue_cursor2-1;
+				if(cue_cursor >= 0){
+					move_time = vtt_cues[cue_cursor].start;
 				}
 			}
 		}
