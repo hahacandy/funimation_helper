@@ -511,6 +511,9 @@ var next = false; // 다음 에피소드로 이동하면 초기화해줘야 할�
 function add_video_listener(){
 	
 	var video = document.querySelector("video");
+	var subtitles_el = document.querySelector('#subtitles');
+	
+	
 	if(video != null){
 		if(video.className.includes('my_subtitles') == false){
 			
@@ -535,6 +538,16 @@ function add_video_listener(){
 			}
 			next = true;
 			
+			//영상 보는 곳이 아닌 곳에서 돌아왓을 경우 다시 나타나게 함
+			if(subtitles_el != null && subtitles_el.innerText.length > 0 && subtitles_el.style.display == 'none'){
+				document.querySelector('#subtitles').style.display = '';
+			}
+			
+		}
+	}else{
+		//영상 보는 곳이 아닐경우 자막이 띄어져잇으면 숨김
+		if(subtitles_el != null){
+			document.querySelector('#subtitles').style.display = 'none';
 		}
 	}
 }
