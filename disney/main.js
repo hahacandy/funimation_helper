@@ -215,6 +215,8 @@ function convert_vtt_to_cue(){
 
 //////////////////// 키보드 누르면 자막이동
 
+var latest_move_cursor = null;
+
 function get_vide_time(mode, vid_current_time, vid_paused){
 	
 	var subtitle_1_el = document.querySelector('#subtitle-1');
@@ -231,6 +233,8 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 	
 	var current_cue_cursor = null;
 	
+	var move_cursor = null;
+	
 	for(i=0; i<vtt_cues.length; i++){
 		
 		if(vtt_cues[i].text == current_sub_html){
@@ -240,9 +244,8 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 	}
 	
 	if(mode == 'right'){
-		
-		if(current_cue_cursor != null){
-			var move_cursor = current_cue_cursor+1;
+		move_cursor = current_cue_cursor+1;
+		if(current_cue_cursor != null && latest_move_cursor != move_cursor){
 			if(move_cursor < vtt_cues.length){
 				move_time = vtt_cues[move_cursor].start;
 			}
@@ -258,9 +261,8 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 
 	}
 	else if(mode == 'left'){
-		
-		if(current_cue_cursor != null){
-			var move_cursor = current_cue_cursor-1;
+		move_cursor = current_cue_cursor-1;
+		if(current_cue_cursor != null && latest_move_cursor != move_cursor){
 			if(move_cursor >= 0){
 				move_time = vtt_cues[move_cursor].start;
 			}
@@ -293,6 +295,8 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 			}
 		}
 	}
+	
+	latest_move_cursor = move_cursor;
 
 	//console.log(move_time);
 	return move_time;
