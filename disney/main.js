@@ -192,6 +192,7 @@ function convert_vtt_to_cue(){
 
 function get_vide_time(mode, vid_current_time){
 	
+
 	var move_time = null;
 	
 	if(mode == 'right'){
@@ -262,6 +263,7 @@ const video_event_listener = (e) => {
 				move_time = get_vide_time('right', vid_current_time);
 			}
 		}else if (e.code == "Numpad8") {
+			cue_will_stop = true;
 			move_time = get_vide_time('up', vid_current_time);
 		}else if (e.code == "Numpad0" || e.code == "Numpad5") {
 			
