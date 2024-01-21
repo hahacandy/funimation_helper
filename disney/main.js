@@ -391,13 +391,35 @@ function create_subtitle(){
 		
 		var temp_ele = document.createElement('div');
 		temp_ele.id = 'subtitles';
+		
+		var temp_ele_1 = document.createElement('div');
+		temp_ele_1.id = 'sub_left';
+		
+		var temp_ele_2 = document.createElement('div');
+		temp_ele_2.id = 'sub_center';
+		
+		var temp_ele_3 = document.createElement('div');
+		temp_ele_3.id = 'sub_right';
+		var temp_ele_3_1 = document.createElement('div');
+		temp_ele_3_1.id = 'sub_right_1';
+		var temp_ele_3_2 = document.createElement('div');
+		temp_ele_3_2.id = 'sub_right_2';
+		temp_ele_3.appendChild(temp_ele_3_1);
+		temp_ele_3.appendChild(temp_ele_3_2);
+		
+		temp_ele.appendChild(temp_ele_1);
+		temp_ele.appendChild(temp_ele_2);
+		temp_ele.appendChild(temp_ele_3);
+		
 		var temp_ele2 = document.createElement('div');
 		temp_ele2.id = 'subtitle-1';
 		var temp_ele3 = document.createElement('div');
 		temp_ele3.id = 'subtitle-2';
 		
-		temp_ele.appendChild(temp_ele2);
-		temp_ele.appendChild(temp_ele3);
+		temp_ele_2.appendChild(temp_ele2);
+		temp_ele_2.appendChild(temp_ele3);
+		
+
 		
 		document.querySelector('#app_body_content').appendChild(temp_ele);
 		
@@ -407,7 +429,7 @@ function create_subtitle(){
 		my_subtitles = document.querySelector('#subtitles');
 		my_subtitles.style.display = 'none';
 		
-		target_el = document.querySelector('#subtitle-2');
+		target_el = document.querySelector('#sub_right_2');
 		
 
 		my_subtitles.style.top = getCookie('subtitle_top'); // 이전 자막 위치 값 불러오기
