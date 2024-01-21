@@ -192,9 +192,13 @@ function convert_vtt_to_cue(){
 
 function get_vide_time(mode, vid_current_time, vid_paused){
 	
+	if(vid_paused==true)
+		vid_current_time = vid_current_time-0.3;
+	
 	var move_time = null;
 	
 	if(mode == 'right'){
+		
 		for(i=0; i<vtt_cues.length; i++){
 			if(vid_current_time < vtt_cues[i].start){
 				move_time = vtt_cues[i].start;
@@ -203,9 +207,6 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 		}
 	}
 	else if(mode == 'left'){
-		
-		if(vid_paused==true)
-			vid_current_time = vid_current_time-0.3;
 		
 		for(i=vtt_cues.length-1; i>=0; i--){
 
@@ -220,9 +221,6 @@ function get_vide_time(mode, vid_current_time, vid_paused){
 		}
 	}
 	else if(mode == 'up'){
-		
-		if(vid_paused==true)
-			vid_current_time = vid_current_time-0.3;
 		
 		for(i=0; i<vtt_cues.length; i++){
 			
