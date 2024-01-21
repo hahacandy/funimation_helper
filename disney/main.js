@@ -220,7 +220,7 @@ function get_vide_time(mode, vid_current_time){
 		
 		for(i=0; i<vtt_cues.length; i++){
 			
-			if(vid_current_time < vtt_cues[i].start){
+			if(vid_current_time-0.3 < vtt_cues[i].start){
 				
 				var cue_cursor = i-1;
 				if(cue_cursor >= 0){
@@ -501,7 +501,7 @@ function add_video_listener(){
 				is_getting = false;
 				vtt_cues = [];
 				
-				setTimeout(get_vtt_url, 3000);
+				setTimeout(get_vtt_url, 5000);
 			}
 			next = true;
 			
