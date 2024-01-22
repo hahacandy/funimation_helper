@@ -203,7 +203,7 @@ function convert_vtt_to_cue(){
 				}
 			}
 			
-			vtt_cue.text = text_cue;
+			vtt_cue.text = text_cue.replaceAll('\n', ' ');
 			
 			vtt_cues.push(vtt_cue);
 			
