@@ -99,7 +99,6 @@ async def accept_func(websocket, path):
             io = StringIO(data)
             json_data = json.load(io)
             msg = json_data['msg']
-            cursor = json_data['cursor']
 
             trans_msg = None
             
@@ -108,16 +107,18 @@ async def accept_func(websocket, path):
             else:
                 trans_msg= trans_text(driver, msg)
                 trans_msg.strip()
-                saved_translated_subtitles[msg] = trans_msg
+                #saved_translated_subtitles[msg] = trans_msg
                  
             if trans_msg != None:
                 print(time.strftime('%Y-%m-%d  %H:%M:%S'), ' : ' + msg + ' -> ' + trans_msg)
-                send_info = json.dumps({'cursor':cursor, 'trans_msg':trans_msg})
+                send_info = json.dumps({'msg':msg, 'trans_msg':trans_msg})
                 print(send_info)
                 print()
                 #client_socket.sendall(trans_msg.encode(encoding="utf-8"))
                 
                 await websocket.send(send_info);# 클라인언트로 echo를 붙여서 재 전송한다.
+            else:
+                driver.get('https://www.google.com/search?q=%EA%B5%AC%EA%B8%80+%EB%B2%88%EC%97%AD') # vpn 같은거 떔에 결과가 안나올수도 잇어서 새로고침 
         except:
             pass
             
