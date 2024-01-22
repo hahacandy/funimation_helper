@@ -706,7 +706,7 @@ function check_change_subtitle_text(){
 					//trans_sub_bar_element.setAttribute('data-value', '');
 					trans_sub_bar_element.textContent = '';
 					
-					//translated_subtitles[current_subtitle_text] = ''; //같은거 여러번 번역 안하기 위함
+					translated_subtitles[current_subtitle_text] = ''; //같은거 여러번 번역 안하기 위함
 					
 					var data = new Object() ;
 					data.msg = current_subtitle_text;
