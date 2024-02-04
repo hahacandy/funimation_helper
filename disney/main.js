@@ -66,20 +66,27 @@ function get_vtt_url(){
 		if(network.name != null){
 			
 			var url = network['name'];
+			
 
 			if(url.includes('subtitles_') && url.includes('seg_') && url.slice(-4) == '.vtt'){
+				//console.log(network);
+				var temp = url.split('/');
 				
-				var temp = url.split(0);
 				
-				if(temp.length > 7){
+				if(temp.length > 9){
 					
 					var is_used = false;
 					
-					var current_token = temp[6];
+					var current_token = temp[8];
 					
-					for(var i=0; i<link_used.length; i++){
-						if(current_token == link_used[i]){
+					//console.log(current_token);
+					
+					//console.log(url);
+					
+					for(var k=0; k<link_used.length; k++){
+						if(current_token == link_used[k]){
 							is_used = true;
+							vtt_url = null;
 							break;
 						}
 					}
@@ -133,7 +140,7 @@ function get_subtitle(){
 		}else{
 			epi_str = idx2;
 		}
-
+		
 		var vtt_url2 = vtt_url.slice(0,vtt_url.length-7) + epi_str + '.vtt';
 		
 		console.log(vtt_url2);
@@ -145,8 +152,19 @@ function get_subtitle(){
 	
 	if(x.readyState == '4'){
 		if(x.status == '200'){
+			
+			
 			english_vtt = x.responseText;
 			
+			if(english_vtt.length < 1000){
+				all_vtt = '';
+				x = null;
+				idx_ = 0;
+				is_getting = false;
+				get_vtt_url();
+				return;
+			}
+
 			all_vtt = all_vtt + english_vtt
 
 			idx_ ++
@@ -594,6 +612,7 @@ function add_video_listener(){
 				idx_ = 0;
 				is_getting = false;
 				vtt_cues = [];
+				link_used = []
 				
 				get_vtt_url();
 			}
