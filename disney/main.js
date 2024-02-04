@@ -167,9 +167,18 @@ function get_subtitle(){
 
 			all_vtt = all_vtt + english_vtt
 
+
 			idx_ ++
+			
+			document.querySelector('#subtitles').style.display = '';
+			document.querySelector('#subtitle-2').style.display = '';
+			document.querySelector('#subtitle-2').innerHTML = '자막 로딩 중 ' + idx_;
+			
 		}else if(x.status == '404'){
 			idx_ = 999; // 자막 끝까지 가져왔으므로 정지
+			document.querySelector('#subtitles').style.display = '';
+			document.querySelector('#subtitle-2').style.display = '';
+			document.querySelector('#subtitle-2').innerHTML = '자막 로딩 완료';
 		}
 		
 		is_getting = false;
