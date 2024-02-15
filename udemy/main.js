@@ -10,8 +10,26 @@ function trans_when_change_subtitle(){
 		
 		var trans_sub = translated_subtitles[current_subtitle_text];
 		
+		var trans_bar_child = document.getElementsByClassName('enl-whole-title-translation')[1].childNodes;
+		if(trans_bar_child.length==3)
+		{
+			trans_bar_child[2].remove();
+			trans_bar_child[0].remove();
+		}
+		
+		var trans_sub_bar_element = document.querySelector('#ejoy > div:nth-child(4) > span');
+		
+		trans_sub_bar_element.class = 'add-auto-pause';
+		
+		trans_sub_bar_element.style.lineHeight = '1.5';
+		trans_sub_bar_element.style.flexDirection = 'column';
+		trans_sub_bar_element.style.fontSize = '22px';
+		trans_sub_bar_element.style.color = 'rgb(106, 228, 255)';
+		trans_sub_bar_element.style.background = 'rgba(17, 17, 17, 0.7)';
+		trans_sub_bar_element.style.filter = '';
+		
 		if(trans_sub != null){
-			var trans_sub_bar_element = document.querySelector('#ejoy > div:nth-child(4) > span');
+
 			
 			if(trans_sub_bar_element.textContent != trans_sub){
 				
@@ -27,7 +45,6 @@ function trans_when_change_subtitle(){
 				if(current_subtitle_text != latest_subtitle_text){
 					
 					
-					trans_sub_bar_element = document.querySelector('#ejoy > div:nth-child(4) > span');
 
 					trans_sub_bar_element.textContent = '';
 
