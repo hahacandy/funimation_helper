@@ -5,8 +5,21 @@ var latest_subtitle_text = '';
 function trans_when_change_subtitle(){
 	
 	try{
-	
-		var current_subtitle_text = document.getElementsByClassName('ejoy-subtitles__sub')[0].textContent;
+		
+		var current_eng_subtitle_text_child = document.getElementsByClassName('glot-subtitles__sub__con')[0].childNodes;
+		
+		var current_subtitle_text = '';
+		current_eng_subtitle_text_child.forEach((item) => {
+			
+			var eng_word = item.getAttribute('data-text');
+			
+			if(eng_word != null){
+				current_subtitle_text = current_subtitle_text + ' ' + eng_word;
+			}
+
+		});
+		
+		current_subtitle_text = current_subtitle_text.trim();
 		
 		var trans_sub = translated_subtitles[current_subtitle_text];
 		
