@@ -70,11 +70,11 @@ function trans_when_change_subtitle(){
 					console.log(current_subtitle_text);
 				}
 
-				latest_subtitle_text = current_subtitle_text;
-				
 			}
 			
 		}
+		
+		latest_subtitle_text = current_subtitle_text;
 
 		
 	
@@ -117,9 +117,13 @@ function onMessage(event) {
 		try{
 			var receive_json = JSON.parse(event.data);
 			
-			translated_subtitles[receive_json.msg] = receive_json.trans_msg;
+			if(receive_json.trans_msg.length > 0){
+				translated_subtitles[receive_json.msg] = receive_json.trans_msg;
+				
+				console.log(translated_subtitles[receive_json.msg]);
+			}
 			
-			console.log(translated_subtitles[receive_json.msg]);
+
 		}catch(err){
 			console.log(err);
 		}
