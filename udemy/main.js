@@ -92,8 +92,6 @@ var server_ip = '192.168.0.49'
 
 var webSocket = null;
 
-var is_use_socket = false;
-
 function set_wsk(){
 	
 	webSocket = new WebSocket('ws://' + server_ip + ':9990');
@@ -141,12 +139,7 @@ function onClose(event) {
 }
 
 function send(data) {
-	
-	if(!is_use_socket){
-		is_use_socket = true;
-
-		webSocket.send(JSON.stringify(data));
-	}
+	webSocket.send(JSON.stringify(data));
 }
 
 set_wsk();
