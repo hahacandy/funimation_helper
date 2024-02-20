@@ -54,13 +54,10 @@ function trans_when_change_subtitle(){
 		}else{
 
 			if(current_subtitle_text != null && current_subtitle_text.length > 0){
+				
+				trans_sub_bar_element.textContent = '';
 
 				if(current_subtitle_text != latest_subtitle_text){
-					
-					
-
-					trans_sub_bar_element.textContent = '';
-
 					
 					var data = new Object() ;
 					data.msg = current_subtitle_text;
